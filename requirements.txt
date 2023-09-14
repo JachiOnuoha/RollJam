@@ -1,2 +1,3 @@
 pyrtlsdr
-librtlsdr
+Cypython
+matplotlib
