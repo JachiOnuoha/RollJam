@@ -12,15 +12,19 @@ class SignalRecorder:
         Record a signal at a specified center frequency with a specified gain and sample size in bytes
     generate_psd_plot(signal_array:list[complex], plot_name: str, frequency_bin_size: int)
         Generate a Power Spectral Density(PSD) plot of an array of samples of a given signal recording
-    write_signal_to_file
+    write_signal_to_file(signal_array: list[complex], file_name: str)
         Write a recorded signal array to an iq file for further processing
+    read_signal_from_file(file_name: str)
+        Reads an iq file into a np.complex128 array
     """
 
     def __init__(self, sdr: RtlSdrAio) -> None:
         self.__sdr = sdr
 
-    def record_samples(self, signal_array_size: float, center_frequency: float, sdr_gain: Union[int, str])-> list[complex]:
+    def record_samples(self, signal_array_size: float, center_frequency: float, sdr_gain: Union[int, str])-> list[complex64]:
         """ Record a specifc number of data points of signal at a specified center frequency with a specified gain
+        Note: The recorded signal is stored in an array of np.complex64 numbers - these are complex numbers whereby each value is a 32-bit float i.e. [32-bit float] + j[32-bit float].
+        See https://pysdr.org/content/iq_files.html for futher details
 
         Parameters
         ----------
@@ -33,20 +37,21 @@ class SignalRecorder:
         
         Returns
         -------
-        `list[complex]`
+        `list[complex64]`
             A list of complex numbers which represent the magnitude and phase values of frequnencies recorded by the tuner.
-            This will be a :class:`numpy.ndarray` if numpy is available
+            This will be a :class:`numpy.ndarray` if numpy is available and will return an array of np.complex64 numbers
         """
         
         self.__sdr.center_freq = center_frequency
         self.__sdr.gain = sdr_gain
 
         signal_array = self.__sdr.read_samples(signal_array_size)
+        signal_array = self.__convert_to_npcomplex64_array(signal_array)
         self.__sdr.close()
         return signal_array
     
     def generate_psd_plot(self, signal_array:list[complex], plot_name: str, frequency_bin_size: int = 1024) -> None:
-        """ Generate a Power Spectral Density(PSD) plot of an array of samples of a given signal recording
+        """ Generate a Power Spectral Density(PSD) plot of an array of samples of a given signal recording.
 
         Parameters
         ----------
@@ -77,7 +82,7 @@ class SignalRecorder:
         signal_array: `list[complex] | nd.array`
             A list of complex numbers which represent the magnitude and phase values of frequnencies recorded by the tuner.
         file_name: `str`
-            The name or path of the file to be written to.
+            The name or file path of the file to be written to.
         
         Returns
         ----------
@@ -86,7 +91,30 @@ class SignalRecorder:
         signal_array_npcomplex64 = self.__convert_to_npcomplex64_array(signal_array)
         signal_array_npcomplex64.tofile("{}.iq".format(file_name))
 
-    def __convert__to_npcomplex64_array(signal_array: list[complex])->list[complex64]:
+    def read_signal_from_file(self, file_name)->list[complex64]:
+        """ Reads an iq file into a np.complex64 array
+
+        Parameters
+        ----------
+        file_name : `str`
+           The name or file path of the iq file of the recorded signal
+
+        Returns
+        -------
+        `list[complex64]`
+            A signal array of np.complex64 values
+        """
+
+        try:
+            result_signal_array = np.fromfile(file="{}.iq".format(file_name), dtype=np.complex64)
+            return result_signal_array
+        except FileNotFoundError:
+            print(FileNotFoundError)
+        except:
+            print("Failed to read from {}".format(file_name))
+
+
+    def __convert_to_npcomplex64_array(self, signal_array: list[complex])->list[complex64]:
         """ Converts any signal array into an array of np.complex64 values
 
         Parameters
