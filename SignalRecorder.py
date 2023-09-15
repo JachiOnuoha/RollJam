@@ -3,6 +3,15 @@ from rtlsdr import RtlSdrAio
 from typing import Union
 
 class SignalRecorder:
+    """ A class that manages signal recording and saving
+    
+    Methods
+    -------
+    record_samples(sample_size: float, center_frequency: float, sdr_gain: Union[int, str])
+        Record a signal at a specified center frequency with a specified gain and sample size in bytes
+    generate_psd_plot(self, samples:list[complex], plot_name: str)
+        Generate a Power Spectral Density(PSD) plot of an array of samples of a given signal recording
+    """
     def __init__(self, sdr: RtlSdrAio) -> None:
         self.__sdr = sdr
 
