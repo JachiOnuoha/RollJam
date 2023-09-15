@@ -1,3 +1,4 @@
 pyrtlsdr
 Cypython
 matplotlib
+scipy
