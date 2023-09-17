@@ -19,6 +19,7 @@ class SignalRecorder:
     """
 
     def __init__(self, sdr: RtlSdrAio) -> None:
+        #TODO: Update docstring to contain class docstring
         self.__sdr = sdr
 
     def record_samples(self, signal_array_size: float, center_frequency: float, sdr_gain: Union[int, str])-> list[complex64]:
@@ -50,6 +51,7 @@ class SignalRecorder:
         self.__sdr.close()
         return signal_array
     
+     #TODO: Create static method version
     def generate_psd_plot(self, signal_array:list[complex], plot_name: str, frequency_bin_size: int = 1024) -> None:
         """ Generate a Power Spectral Density(PSD) plot of an array of samples of a given signal recording.
 
@@ -74,6 +76,7 @@ class SignalRecorder:
         except:
             print("Failed to plot samples")
 
+    #TODO: Create static method version
     def write_signal_to_file(self, signal_array: list[complex], file_name: str)-> None:
         """ Write a recorded signal array to an iq file for further processing
 
@@ -91,6 +94,7 @@ class SignalRecorder:
         signal_array_npcomplex64 = self.__convert_to_npcomplex64_array(signal_array)
         signal_array_npcomplex64.tofile("{}.iq".format(file_name))
 
+     #TODO: Create static method version
     def read_signal_from_file(self, file_name)->list[complex64]:
         """ Reads an iq file into a np.complex64 array
 
