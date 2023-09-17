@@ -59,8 +59,8 @@ class SignalRecorder:
             A list of complex numbers which represent the magnitude and phase values of frequnencies recorded by the tuner.
         plot_name: `str`
             The name or filepath of the generated plot image
-        frequency_bin_size: `int`, default is 1024
-            The number data points in each frequency bins
+        frequency_bin_size: `int`, optional
+            The number data points in each frequency bins, by default 1024
         
         Returns
         ----------
